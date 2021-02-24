@@ -4,6 +4,10 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
+use Illuminate\Subport\Facades\File;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Redirect;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 
 class UsersController extends Controller
@@ -15,7 +19,14 @@ class UsersController extends Controller
      */
     public function index()
     {
-        $data = DB::table('users')
+        $data = DB::table('admin')
+            ->get();
+        //return response()->json($data);
+        return view('login');
+    }
+    public function getadmin()
+    {
+        $data = DB::table('admin')
             ->get();
         return response()->json($data);
     }
@@ -44,7 +55,7 @@ class UsersController extends Controller
         $data['username'] = $request->username;
         $data['password'] = $password;
 
-        $user_add = DB::table('users')->insert($data);
+        $user_add = DB::table('admin')->insert($data);
 
         return response()->json(['status'=>$user_add]);
 
@@ -56,16 +67,17 @@ class UsersController extends Controller
         $username = $request->username;
         $password = $request->password;
 
-        $data_user = DB::table('users')
+        $data_user = DB::table('admin')
                     ->where('username', $username)
                     ->first();
         
         $check_password = Hash::check($password, $data_user->password);
 
         if($check_password == true){
-            return response()->json(['status'=>'success',$data_user->username]);
+            return response()->json(['status'=>'success']);
         }else{
             return response()->json(['status'=>'error']);
+     
         }
 
     }
@@ -107,7 +119,7 @@ class UsersController extends Controller
         $password = Hash::make($request->password);
         $data['password'] = $password;
 
-        $data_update = DB::table('users')
+        $data_update = DB::table('db_employee')
                         ->where('id', $id)
                         ->update($data);
 
@@ -124,7 +136,7 @@ class UsersController extends Controller
     {
         $id = $request->id;
 
-        DB::table('users')
+        DB::table('admin')
             ->where('id', $id)
             ->delete();
 
